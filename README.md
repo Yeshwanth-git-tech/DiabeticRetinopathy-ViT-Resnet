@@ -5,13 +5,13 @@ This project trains and deploys deep learning models (ViT & ResNet-50) for APTOS
 The diagram below shows the full pipeline:
 
 ```mermaid
- flowchart LR
-     %% --- Style Definitions (retained from before) ---
+ flowchart TB
+     %% --- Style Definitions ---
      classDef bronzeStyle fill:#cd7f32,stroke:#8B4513,stroke-width:2px,color:#ffffff
      classDef silverStyle fill:#bdc3c7,stroke:#7f8c8d,stroke-width:2px,color:#000000
      classDef goldStyle fill:#f1c40f,stroke:#b8860b,stroke-width:2px,color:#000000
  
-     %% --- (Bronze and Silver Tiers remain the same) ---
+     %% --- Bronze Tier ---
      subgraph Bronze Tier - Data Foundation
          direction TB
          A["📄 Load APTOS 2019 Dataset"] --> B["🔍 Audit & Clean Images"]
@@ -21,6 +21,7 @@ The diagram below shows the full pipeline:
      end
      class A,B,C,D,E bronzeStyle
  
+     %% --- Silver Tier ---
      subgraph Silver Tier - Model Training
          direction LR
  
@@ -42,7 +43,7 @@ The diagram below shows the full pipeline:
      end
      class G1,G2,G3,G4,G5,H1,H2,H3,H4 silverStyle
  
-     %% --- GOLD TIER: Prediction ---
+     %% --- Gold Tier ---
      subgraph Gold Tier - Prediction
          direction LR
          I1["📤 Upload Retinal Scan"] --> I2["🤖 Model Prediction"]
@@ -59,7 +60,7 @@ The diagram below shows the full pipeline:
      E --> H1
      G5 --> I1
      H5 --> I1
- ```
+```
 
 
 This project provides a web-based Gradio app to classify **Diabetic Retinopathy** severity using:
