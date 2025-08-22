@@ -61,6 +61,7 @@ The diagram below shows the full pipeline:
      H5 --> I1
  ```
 
+
 This project provides a web-based Gradio app to classify **Diabetic Retinopathy** severity using:
 - **Vision Transformer (ViT, PyTorch)**  
 - **ResNet-50 (TensorFlow/Keras)**  
