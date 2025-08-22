@@ -21,8 +21,8 @@ flowchart TB
     end
     class A,B,C,D,E bronzeStyle
 
-    %% --- 🥈 SILVER TIER: Model Training ---
-    subgraph 🥈 Silver Tier - Model Training
+    %% --- SILVER TIER: Model Training ---
+    subgraph Silver Tier - Model Training
         direction LR
         
         subgraph ViT Training (PyTorch)
@@ -43,8 +43,8 @@ flowchart TB
     end
     class G1,G2,G3,G4,G5,H1,H2,H3,H4 silverStyle
     
-    %% --- 🥇 GOLD TIER: Evaluation & Deployment ---
-    subgraph 🥇 Gold Tier - Final Product
+    %% --- GOLD TIER: Evaluation & Deployment ---
+    subgraph Gold Tier - Final Product
         direction TB
         I1["🧪 Evaluate on Test Set<br/>(Accuracy, QWK, F1-Score)"] --> I2["📊 Generate Confusion Matrix"]
         I2 --> J1["🚀 Deploy to Hugging Face Space"]
