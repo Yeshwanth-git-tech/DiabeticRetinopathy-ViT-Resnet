@@ -11,17 +11,16 @@ The diagram below shows the full pipeline:
      classDef silverStyle fill:#bdc3c7,stroke:#7f8c8d,stroke-width:2px,color:#000000
      classDef goldStyle fill:#f1c40f,stroke:#b8860b,stroke-width:2px,color:#000000
  
-     %% --- Bronze Tier ---
+     %% --- BRONZE TIER: Data Pipeline ---
      subgraph Bronze Tier - Data Foundation
          direction TB
          A["📄 Load APTOS 2019 Dataset"] --> B["🔍 Audit & Clean Images"]
          B --> C["✨ Advanced Preprocessing<br/>(Fundus Crop + CLAHE)"]
-         C --> D["⚖️ Stratified 80/20 Split"]
-         D --> E["🎚️ Compute Class Weights"]
+         C --> D["⚖️ Class Weight Penalty<br/>to Maintain Class Balance"]
      end
-     class A,B,C,D,E bronzeStyle
+     class A,B,C,D bronzeStyle
  
-     %% --- Silver Tier ---
+     %% --- SILVER TIER: Model Training ---
      subgraph Silver Tier - Model Training
          direction LR
  
@@ -43,21 +42,18 @@ The diagram below shows the full pipeline:
      end
      class G1,G2,G3,G4,G5,H1,H2,H3,H4 silverStyle
  
-     %% --- Gold Tier ---
-     subgraph Gold Tier - Prediction
-         direction LR
-         I1["📤 Upload Retinal Scan"] --> I2["🤖 Model Prediction"]
-         I2 --> I3["🩺 Predicts: No_DR"]
-         I2 --> I4["🩺 Predicts: Mild"]
-         I2 --> I5["🩺 Predicts: Moderate"]
-         I2 --> I6["🩺 Predicts: Severe"]
-         I2 --> I7["🩺 Predicts: Proliferate_DR"]
+     %% --- GOLD TIER: Final Product ---
+     subgraph Gold Tier - Final Product
+         direction TB
+         I1["🧪 Evaluate on Test Set<br/>(Accuracy, QWK, F1-Score)"] --> I2["📊 Generate Confusion Matrix"]
+         I2 --> J1["🚀 Deploy to Hugging Face Space"]
+         J1 --> J2["Interactive Gradio App<br/>(User Upload & Prediction)"]
      end
-     class I1,I2,I3,I4,I5,I6,I7 goldStyle
+     class I1,I2,J1,J2 goldStyle
  
      %% --- Connections ---
-     E --> G1
-     E --> H1
+     D --> G1
+     D --> H1
      G5 --> I1
      H5 --> I1
 ```
