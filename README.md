@@ -11,8 +11,8 @@ flowchart TB
     classDef silverStyle fill:#bdc3c7,stroke:#7f8c8d,stroke-width:2px,color:#000000
     classDef goldStyle fill:#f1c40f,stroke:#b8860b,stroke-width:2px,color:#000000
 
-    %% --- 🥉 BRONZE TIER: Data Pipeline ---
-    subgraph 🥉 Bronze Tier - Data Foundation
+    %% --- BRONZE TIER: Data Pipeline ---
+    subgraph Bronze Tier - Data Foundation
         direction TB
         A["📄 Load APTOS 2019 Dataset"] --> B["🔍 Audit & Clean Images"]
         B --> C["✨ Advanced Preprocessing<br/>(Fundus Crop + CLAHE)"]
