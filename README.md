@@ -7,7 +7,7 @@ The diagram below shows the full pipeline:
 ```mermaid
  flowchart TB
      %% --- Style Definitions ---
-     classDef bronzeStyle fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#ecf0f1
+     classDef bronzeStyle fill:#cd7f32,stroke:#8B4S13,stroke-width:2px,color:#ffffff
      classDef silverStyle fill:#bdc3c7,stroke:#7f8c8d,stroke-width:2px,color:#000000
      classDef goldStyle fill:#f1c40f,stroke:#b8860b,stroke-width:2px,color:#000000
  
