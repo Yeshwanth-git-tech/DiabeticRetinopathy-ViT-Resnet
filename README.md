@@ -14,11 +14,11 @@ The diagram below shows the full pipeline:
      %% --- BRONZE TIER: Data Pipeline ---
      subgraph Bronze Tier - Data Foundation
          direction TB
-         A["📄 Load APTOS 2019 Dataset"] --> B["🔍 Audit & Clean Images"]
-         B --> C["✨ Advanced Preprocessing<br/>(Fundus Crop + CLAHE)"]
-         C --> D["⚖️ Class Weight Penalty<br/>to Maintain Class Balance"]
+         A["📄 Load Data,  Audit & Clean Images"]
+         A --> B["✨ Advanced Preprocessing<br/>(Fundus Crop + CLAHE)"]
+         B --> C["⚖️ Class Weight Penalty<br/>to Maintain Class Balance"]
      end
-     class A,B,C,D bronzeStyle
+     class A,B,C bronzeStyle
  
      %% --- SILVER TIER: Model Training ---
      subgraph Silver Tier - Model Training
