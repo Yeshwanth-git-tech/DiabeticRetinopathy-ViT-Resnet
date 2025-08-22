@@ -5,126 +5,60 @@ This project trains and deploys deep learning models (ViT & ResNet-50) for APTOS
 The diagram below shows the full pipeline:
 
 ```mermaid
-flowchart TB
-    %% --- Style Definitions ---
-    classDef bronzeStyle fill:#cd7f32,stroke:#8B4513,stroke-width:2px,color:#ffffff
-    classDef silverStyle fill:#bdc3c7,stroke:#7f8c8d,stroke-width:2px,color:#000000
-    classDef goldStyle fill:#f1c40f,stroke:#b8860b,stroke-width:2px,color:#000000
-
-    %% --- BRONZE TIER: Data Pipeline ---
-    subgraph Bronze Tier - Data Foundation
-        direction TB
-        A["📄 Load APTOS 2019 Dataset"] --> B["🔍 Audit & Clean Images"]
-        B --> C["✨ Advanced Preprocessing<br/>(Fundus Crop + CLAHE)"]
-        C --> D["⚖️ Stratified 80/20 Split"]
-        D --> E["🎚️ Compute Class Weights"]
-    end
-    class A,B,C,D,E bronzeStyle
-
-    %% --- SILVER TIER: Model Training ---
-    subgraph Silver Tier - Model Training
-        direction LR
-        
-        subgraph ViT Training (PyTorch)
-            direction TB
-            G1["ViT AutoImageProcessor"] --> G2["Custom PyTorch Dataset<br/>(Albumentations Augmentation)"]
-            G2 --> G3["<b>Phase 1:</b> Head Training<br/><i>(5 Epochs, LR: 5e-4)</i>"]
-            G3 --> G4["<b>Phase 2:</b> Fine-Tune<br/><i>(20 Epochs, LR: 2e-5)</i>"]
-            G4 --> G5["📦 Export ViT Model"]
-        end
-
-        subgraph ResNet-50 Training (TensorFlow)
-            direction TB
-            H1["tf.data Pipeline"] --> H2["<b>Model:</b> ResNet50 Base + Dense(5)<br/><i>(23.5M Params)</i>"]
-            H2 --> H3["<b>Initial Training:</b> Train Head<br/><i>(25 Epochs, LR: 1e-3)</i>"]
-            H3 --> H4["<b>Fine-Tuning:</b> Unfreeze Base<br/><i>(10 Epochs, LR: 1e-5)</i>"]
-            H4 --> H5["💾 Save ResNet-50 Model"]
-        end
-    end
-    class G1,G2,G3,G4,G5,H1,H2,H3,H4 silverStyle
-    
-    %% --- GOLD TIER: Evaluation & Deployment ---
-    subgraph Gold Tier - Final Product
-        direction TB
-        I1["🧪 Evaluate on Test Set<br/>(Accuracy, QWK, F1-Score)"] --> I2["📊 Generate Confusion Matrix"]
-        I2 --> J1["🚀 Deploy to Hugging Face Space"]
-        J1 --> J2["Interactive Gradio App<br/>(User Upload & Prediction)"]
-    end
-    class I1,I2,J1,J2 goldStyle
-    
-    %% --- Connections ---
-    E --> G1
-    E --> H1
-    G5 --> I1
-    H5 --> I1
-```
-
-<!-- ```mermaid
-flowchart TB
-    %% --- Style Definitions ---
-    classDef dataStyle fill:#E3F2FD,stroke:#333,stroke-width:2px,color:#0D47A1
-    classDef vitStyle fill:#E8F5E9,stroke:#333,stroke-width:2px,color:#1B5E20
-    classDef resnetStyle fill:#F3E5F5,stroke:#333,stroke-width:2px,color:#4A148C
-    classDef evalStyle fill:#FFF3E0,stroke:#333,stroke-width:2px,color:#E65100
-    classDef deployStyle fill:#E0F7FA,stroke:#333,stroke-width:2px,color:#006064
-
-    %% --- Main Flow ---
-    B["📄 Load Data"] --> C["🔍 Audit Images"]
-    C --> D["✨ Preprocess Fundus<br/>(Crop + CLAHE + Resize)"]
-    D --> E["⚖️ Stratified Split 80/20"]
-    E --> F["🎚️ Calculate Class Weights"]
-    
-    B:::dataStyle
-    C:::dataStyle
-    D:::dataStyle
-    E:::dataStyle
-    F:::dataStyle
-
-    %% --- Training Subgraphs ---
-    subgraph ViT Training Pipeline
-        direction TB
-        G1["ViT AutoImageProcessor"] --> G2["PyTorch Dataset<br/>w/ Augmentations"]
-        G2 --> G3["Phase 1: Train Head"]
-        G3 --> G4["Phase 2: Fine-Tune<br/>(Unfreeze last 6 blocks)"]
-        G4 --> G5["📦 Export Final Model"]
-    end
-    
-    subgraph ResNet-50 Training Pipeline
-        direction TB
-        H1["TensorFlow tf.data Pipeline"] --> H2["ResNet50 + Dense(5)"]
-        H2 --> H3["Fine-Tune Full Base"]
-        H3 --> H4["💾 Save .keras Model"]
-    end
-
-    classDef vitSubgraph fill:#C8E6C9, color:#1B5E20
-    classDef resnetSubgraph fill:#E1BEE7, color:#4A148C
-    class G1,G2,G3,G4,G5 vitStyle
-    class H1,H2,H3,H4 resnetStyle
-
-    %% --- Evaluation & Deployment ---
-    subgraph Evaluation & Metrics
-        direction TB
-        I1["📈 Track Metrics<br/>(Accuracy, QWK, F1)"]
-        I2["✅ Select Best Checkpoint"]
-        I3["🧪 Final Inference on Test Set"]
-    end
-    
-    subgraph Deployment on Hugging Face Spaces
-        direction TB
-        K1["Load ViT & ResNet Models"] --> K2["User Uploads Image"]
-        K2 --> K3["Conditional Preprocessing"]
-        K3 --> K4["Predict & Show Results"]
-    end
-
-    class I1,I2,I3 evalStyle
-    class K1,K2,K3,K4 deployStyle
-
-    %% --- Connections ---
-    F --> G1 & H1
-    G5 --> I1
-    H4 --> I3
-    I2 --> K1
-``` -->
+ flowchart TB
+     %% --- Style Definitions ---
+     classDef bronzeStyle fill:#cd7f32,stroke:#8B4513,stroke-width:2px,color:#ffffff
+     classDef silverStyle fill:#bdc3c7,stroke:#7f8c8d,stroke-width:2px,color:#000000
+     classDef goldStyle fill:#f1c40f,stroke:#b8860b,stroke-width:2px,color:#000000
+ 
+     %% --- BRONZE TIER: Data Pipeline ---
+     subgraph Bronze Tier - Data Foundation
+         direction TB
+         A["📄 Load APTOS 2019 Dataset"] --> B["🔍 Audit & Clean Images"]
+         B --> C["✨ Advanced Preprocessing<br/>(Fundus Crop + CLAHE)"]
+         C --> D["⚖️ Stratified 80/20 Split"]
+         D --> E["🎚️ Compute Class Weights"]
+     end
+     class A,B,C,D,E bronzeStyle
+ 
+     %% --- SILVER TIER: Model Training ---
+     subgraph Silver Tier - Model Training
+         direction LR
+ 
+         subgraph ViT Training (PyTorch)
+             direction TB
+             G1["ViT AutoImageProcessor"] --> G2["Custom PyTorch Dataset<br/>(Albumentations Augmentation)"]
+             G2 --> G3["<b>Phase 1:</b> Head Training<br/><i>(5 Epochs, LR: 5e-4)</i>"]
+             G3 --> G4["<b>Phase 2:</b> Fine-Tune<br/><i>(20 Epochs, LR: 2e-5)</i>"]
+             G4 --> G5["📦 Export ViT Model"]
+         end
+ 
+         subgraph ResNet-50 Training (TensorFlow)
+             direction TB
+             H1["tf.data Pipeline"] --> H2["<b>Model:</b> ResNet50 Base + Dense(5)<br/><i>(23.5M Params)</i>"]
+             H2 --> H3["<b>Initial Training:</b> Train Head<br/><i>(25 Epochs, LR: 1e-3)</i>"]
+             H3 --> H4["<b>Fine-Tuning:</b> Unfreeze Base<br/><i>(10 Epochs, LR: 1e-5)</i>"]
+             H4 --> H5["💾 Save ResNet-50 Model"]
+         end
+     end
+     class G1,G2,G3,G4,G5,H1,H2,H3,H4 silverStyle
+ 
+     %% --- GOLD TIER: Evaluation & Deployment ---
+     subgraph Gold Tier - Final Product
+         direction TB
+         I1["🧪 Evaluate on Test Set<br/>(Accuracy, QWK, F1-Score)"] --> I2["📊 Generate Confusion Matrix"]
+         I2 --> J1["🚀 Deploy to Hugging Face Space"]
+         J1 --> J2["Interactive Gradio App<br/>(User Upload & Prediction)"]
+     end
+     class I1,I2,J1,J2 goldStyle
+ 
+     %% --- Connections ---
+     E --> G1
+     E --> H1
+     G5 --> I1
+     H5 --> I1
+ ```
+ `\`\`\``
 
 This project provides a web-based Gradio app to classify **Diabetic Retinopathy** severity using:
 - **Vision Transformer (ViT, PyTorch)**  
