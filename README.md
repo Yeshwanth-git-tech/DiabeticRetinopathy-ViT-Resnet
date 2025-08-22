@@ -5,13 +5,13 @@ This project trains and deploys deep learning models (ViT & ResNet-50) for APTOS
 The diagram below shows the full pipeline:
 
 ```mermaid
- flowchart TB
-     %% --- Style Definitions ---
+ flowchart LR
+     %% --- Style Definitions (retained from before) ---
      classDef bronzeStyle fill:#cd7f32,stroke:#8B4513,stroke-width:2px,color:#ffffff
      classDef silverStyle fill:#bdc3c7,stroke:#7f8c8d,stroke-width:2px,color:#000000
      classDef goldStyle fill:#f1c40f,stroke:#b8860b,stroke-width:2px,color:#000000
  
-     %% --- BRONZE TIER: Data Pipeline ---
+     %% --- (Bronze and Silver Tiers remain the same) ---
      subgraph Bronze Tier - Data Foundation
          direction TB
          A["📄 Load APTOS 2019 Dataset"] --> B["🔍 Audit & Clean Images"]
@@ -21,7 +21,6 @@ The diagram below shows the full pipeline:
      end
      class A,B,C,D,E bronzeStyle
  
-     %% --- SILVER TIER: Model Training ---
      subgraph Silver Tier - Model Training
          direction LR
  
@@ -43,21 +42,24 @@ The diagram below shows the full pipeline:
      end
      class G1,G2,G3,G4,G5,H1,H2,H3,H4 silverStyle
  
-     %% --- GOLD TIER: Evaluation & Deployment ---
-     subgraph Gold Tier - Final Product
-         direction TB
-         I1["🧪 Evaluate on Test Set<br/>(Accuracy, QWK, F1-Score)"] --> I2["📊 Generate Confusion Matrix"]
-         I2 --> J1["🚀 Deploy to Hugging Face Space"]
-         J1 --> J2["Interactive Gradio App<br/>(User Upload & Prediction)"]
+     %% --- GOLD TIER: Prediction ---
+     subgraph Gold Tier - Prediction
+         direction LR
+         I1["📤 Upload Retinal Scan"] --> I2["🤖 Model Prediction"]
+         I2 --> I3["🩺 Predicts: No_DR"]
+         I2 --> I4["🩺 Predicts: Mild"]
+         I2 --> I5["🩺 Predicts: Moderate"]
+         I2 --> I6["🩺 Predicts: Severe"]
+         I2 --> I7["🩺 Predicts: Proliferate_DR"]
      end
-     class I1,I2,J1,J2 goldStyle
+     class I1,I2,I3,I4,I5,I6,I7 goldStyle
  
      %% --- Connections ---
      E --> G1
      E --> H1
      G5 --> I1
      H5 --> I1
-```
+ ```
 
 This project provides a web-based Gradio app to classify **Diabetic Retinopathy** severity using:
 - **Vision Transformer (ViT, PyTorch)**  
