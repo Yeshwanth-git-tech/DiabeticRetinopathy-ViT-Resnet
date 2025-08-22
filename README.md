@@ -25,7 +25,7 @@ flowchart TB
 
   subgraph ResNet_Training
     direction TB
-    H1[tf.data pipeline] --> H2[ResNet50 + Dense(5)]
+    H1[tf.data pipeline] --> H2["ResNet50 + Dense(5)"]
     H2 --> H3[Fine-tune base]
     H3 --> H4[Save: retinopathy_baseline_model.keras]
     H4 --> H5[Train order:\nMild, Moderate, No_DR, Proliferate_DR, Severe]
