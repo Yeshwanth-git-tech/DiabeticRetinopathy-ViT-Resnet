@@ -6,94 +6,67 @@ The diagram below shows the full pipeline:
 
 ```mermaid
 flowchart TB
-  %% =========================
-  %% OVERALL PIPELINE (DATA → TRAIN → EXPORT → EVAL → APP)
-  %% =========================
-  A[Start] --> B[Mount/Load Data<br/>fundus images + labels]
-  B --> C[Clean & Audit Images<br/>readability checks]
-  C --> D[Preprocess Fundus<br/>circle-crop + CLAHE + resize]
-  D --> E[Stratified Split<br/>Train 80% / Valid 20%]
-  E --> F[Compute Class Weights<br/>inverse frequency]
+  A[Start] --> B[Load data]
+  B --> C[Audit images]
+  C --> D[Preprocess fundus\ncircle crop + CLAHE + resize]
+  D --> E[Stratified split 80/20]
+  E --> F[Class weights]
 
-  %% =========================
-  %% VIT TRAINING (HF / PyTorch)
-  %% =========================
-  subgraph G[ViT Training (PyTorch / Transformers)]
+  subgraph G[VIT training (PyTorch)]
     direction TB
-    G1[AutoImageProcessor (ViT-Base-384)] --> G2[Dataset (Albumentations)<br/>Train: crop/flip/rotate/brightness<br/>Valid: resize only]
-    G2 --> G3[Phase 1: Head-only<br/>Freeze backbone, LR=5e-4, WD=0.05, 5–10 epochs]
-    G3 --> G4[Pick best by QWK<br/>dr-vit-phase1]
-    G4 --> G5[Phase 2a: Unfreeze 6–11,<br/>freeze 0–5; LR=2e-5, WD=0.10,<br/>cosine, warmup=0.10, ~20 epochs]
-    G5 --> G6[Top-off (cool): LR=1e-5,<br/>warmup=0.20, early stop]
-    G6 --> G7[Extended Top-off<br/>patience↑; select highest QWK]
-    G7 --> G8[Export Final (HF format)<br/>dr-vit-EXPORT-final<br/>model.safetensors + config + preprocessor + classes.json]
+    G1[AutoImageProcessor] --> G2[Dataset with augs]
+    G2 --> G3[Phase 1: head only\nLR 5e-4, WD 0.05, 5-10 ep]
+    G3 --> G4[Pick best by QWK]
+    G4 --> G5[Phase 2a: unfreeze 6-11\nLR 2e-5, WD 0.10, cosine, warmup 0.10]
+    G5 --> G6[Top-off cool: LR 1e-5]
+    G6 --> G7[Extended top-off]
+    G7 --> G8[Export: dr-vit-EXPORT-final]
   end
 
-  %% =========================
-  %% RESNET TRAINING (TF / Keras)
-  %% =========================
-  subgraph H[ResNet-50 Training (TensorFlow / Keras)]
+  subgraph H[ResNet50 training (TensorFlow)]
     direction TB
-    H1[tf.data / image_dataset_from_directory] --> H2[Model: ResNet-50<br/>top dense (5)]
-    H2 --> H3[Train: base frozen →<br/>unfreeze = fine-tune]
-    H3 --> H4[Save Keras model<br/>retinopathy_baseline_model.keras]
-    H4 --> H5[NOTE: Training order is alphabetical:<br/>['Mild','Moderate','No_DR','Proliferate_DR','Severe']]
+    H1[tf.data] --> H2[ResNet50 + dense(5)]
+    H2 --> H3[Fine-tune base]
+    H3 --> H4[Save: retinopathy_baseline_model.keras]
+    H4 --> H5[Train order: Mild, Moderate, No_DR, Proliferate_DR, Severe]
   end
 
-  %% =========================
-  %% EVALUATION (VALID & TEST)
-  %% =========================
-  subgraph I[Evaluation & Metrics]
+  subgraph I[Evaluation]
     direction TB
-    I1[VALID loop (HF Trainer)] --> I2[Metrics: Accuracy, F1-macro,<br/>QWK (Quadratic Weighted Kappa), AUC-macro]
-    I2 --> I3[Pick best-QWK ckpt<br/>trainer_state.json.best_model_checkpoint]
-    I3 --> I4[TEST loop (custom)<br/>softmax probs & predictions]
-    I4 --> I5[Confusion Matrix, per-class F1,<br/>Example panels]
+    I1[VALID metrics: Acc, F1 macro, QWK, AUC macro]
+    I2[Select best QWK checkpoint]
+    I3[TEST inference]
+    I4[Confusion matrix, per-class F1, examples]
   end
 
-  %% =========================
-  %% LABEL ORDER / REMAP
-  %% =========================
-  subgraph J[Canonical Labels & Remapping]
+  subgraph J[Label orders]
     direction TB
-    J1[APTOS canonical order:<br/>[No_DR, Mild, Moderate, Severe, Proliferative_DR]]
-    J2[Model training order (alphabetical):<br/>[Mild, Moderate, No_DR, Proliferate_DR, Severe]]
-    J3[Index remap (model → APTOS):<br/>{0→1, 1→2, 2→0, 3→4, 4→3}]
-    J1 --> J3
-    J2 --> J3
+    J1[APTOS order:\nNo_DR, Mild, Moderate, Severe, Proliferative_DR]
+    J2[Model order:\nMild, Moderate, No_DR, Proliferate_DR, Severe]
+    J3[Index remap:\n0→1, 1→2, 2→0, 3→4, 4→3]
   end
 
-  %% =========================
-  %% GRADIO APP (HF Space)
-  %% =========================
-  subgraph K[Hugging Face Space (Gradio UI)]
+  subgraph K[HF Space (Gradio)]
     direction TB
-    K1[Load ViT from dr-vit-EXPORT-final<br/>AutoImageProcessor + AutoModel]
+    K1[Load ViT export]
     K2[Load ResNet .keras]
-    K3[User upload: fundus image]
-    K4[Predict with chosen model<br/>→ softmax probs]
-    K5[Apply index remap to APTOS order]
-    K6[Show top-5 probs (Label component)]
-    K1 --> K4
-    K2 --> K4
-    K3 --> K4 --> K5 --> K6
+    K3[User uploads image]
+    K4[Predict → softmax]
+    K5[Apply remap → APTOS order]
+    K6[Show top-5]
   end
 
-  %% WIRING BETWEEN BLOCKS
   F --> G1
   F --> H1
   G8 --> I1
-  H4 --> I4
-  I4 --> J1
-  I4 --> J2
+  H4 --> I3
+  I3 --> J1
+  I3 --> J2
   J3 --> K5
-
-  %% NOTES
-  classDef note fill:#f7f7ff,stroke:#8a8aff,color:#202040
-  N1:::note
-  N1[QWK matters: better than accuracy for<br/>ordinal classes, penalizes distant mistakes more.]
-  I2 --> N1
-  ```
+  K1 --> K4
+  K2 --> K4
+  K3 --> K4 --> K5 --> K6
+```
 
 This project provides a web-based Gradio app to classify **Diabetic Retinopathy** severity using:
 - **Vision Transformer (ViT, PyTorch)**  
