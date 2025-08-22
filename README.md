@@ -54,7 +54,7 @@ flowchart TB
         I3["🧪 Final Inference on Test Set"]
     end
     
-    subgraph Deployment on 🤗 Spaces
+    subgraph Deployment on Hugging Face Spaces
         direction TB
         K1["Load ViT & ResNet Models"] --> K2["User Uploads Image"]
         K2 --> K3["Conditional Preprocessing"]
