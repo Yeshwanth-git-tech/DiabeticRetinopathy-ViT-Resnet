@@ -6,66 +6,69 @@ The diagram below shows the full pipeline:
 
 ```mermaid
 flowchart TB
-  A[Start] --> B[Load data]
-  B --> C[Audit images]
-  C --> D[Preprocess fundus\ncircle crop + CLAHE + resize]
-  D --> E[Stratified split 80/20]
-  E --> F[Class weights]
+    %% --- Style Definitions ---
+    classDef dataStyle fill:#E3F2FD,stroke:#333,stroke-width:2px,color:#0D47A1
+    classDef vitStyle fill:#E8F5E9,stroke:#333,stroke-width:2px,color:#1B5E20
+    classDef resnetStyle fill:#F3E5F5,stroke:#333,stroke-width:2px,color:#4A148C
+    classDef evalStyle fill:#FFF3E0,stroke:#333,stroke-width:2px,color:#E65100
+    classDef deployStyle fill:#E0F7FA,stroke:#333,stroke-width:2px,color:#006064
 
-  subgraph VIT_Training
-    direction TB
-    G1[AutoImageProcessor] --> G2[Dataset with augmentations]
-    G2 --> G3[Phase 1: head only\nLR 5e-4, WD 0.05, 5-10 epochs]
-    G3 --> G4[Pick best by QWK]
-    G4 --> G5[Phase 2a: unfreeze 6-11\nLR 2e-5, WD 0.10, cosine, warmup 0.10]
-    G5 --> G6[Top-off cool: LR 1e-5]
-    G6 --> G7[Extended top-off]
-    G7 --> G8[Export: dr-vit-EXPORT-final]
-  end
+    %% --- Main Flow ---
+    B["📄 Load Data"] --> C["🔍 Audit Images"]
+    C --> D["✨ Preprocess Fundus<br/>(Crop + CLAHE + Resize)"]
+    D --> E["⚖️ Stratified Split 80/20"]
+    E --> F["🎚️ Calculate Class Weights"]
+    
+    B:::dataStyle
+    C:::dataStyle
+    D:::dataStyle
+    E:::dataStyle
+    F:::dataStyle
 
-  subgraph ResNet_Training
-    direction TB
-    H1[tf.data pipeline] --> H2["ResNet50 + Dense(5)"]
-    H2 --> H3[Fine-tune base]
-    H3 --> H4[Save: retinopathy_baseline_model.keras]
-    H4 --> H5[Train order:\nMild, Moderate, No_DR, Proliferate_DR, Severe]
-  end
+    %% --- Training Subgraphs ---
+    subgraph ViT Training Pipeline
+        direction TB
+        G1["ViT AutoImageProcessor"] --> G2["PyTorch Dataset<br/>w/ Augmentations"]
+        G2 --> G3["Phase 1: Train Head"]
+        G3 --> G4["Phase 2: Fine-Tune<br/>(Unfreeze last 6 blocks)"]
+        G4 --> G5["📦 Export Final Model"]
+    end
+    
+    subgraph ResNet-50 Training Pipeline
+        direction TB
+        H1["TensorFlow tf.data Pipeline"] --> H2["ResNet50 + Dense(5)"]
+        H2 --> H3["Fine-Tune Full Base"]
+        H3 --> H4["💾 Save .keras Model"]
+    end
 
-  subgraph Evaluation
-    direction TB
-    I1[VALID metrics:\nAccuracy, F1 macro, QWK, AUC macro]
-    I2[Select best QWK checkpoint]
-    I3[TEST inference]
-    I4[Confusion matrix,\nper-class F1, examples]
-  end
+    classDef vitSubgraph fill:#C8E6C9, color:#1B5E20
+    classDef resnetSubgraph fill:#E1BEE7, color:#4A148C
+    class G1,G2,G3,G4,G5 vitStyle
+    class H1,H2,H3,H4 resnetStyle
 
-  subgraph Label_Orders
-    direction TB
-    J1[APTOS order:\nNo_DR, Mild, Moderate, Severe, Proliferative_DR]
-    J2[Model order:\nMild, Moderate, No_DR, Proliferate_DR, Severe]
-    J3[Index remap:\n0->1, 1->2, 2->0, 3->4, 4->3]
-  end
+    %% --- Evaluation & Deployment ---
+    subgraph Evaluation & Metrics
+        direction TB
+        I1["📈 Track Metrics<br/>(Accuracy, QWK, F1)"]
+        I2["✅ Select Best Checkpoint"]
+        I3["🧪 Final Inference on Test Set"]
+    end
+    
+    subgraph Deployment on 🤗 Spaces
+        direction TB
+        K1["Load ViT & ResNet Models"] --> K2["User Uploads Image"]
+        K2 --> K3["Conditional Preprocessing"]
+        K3 --> K4["Predict & Show Results"]
+    end
 
-  subgraph HF_Space_Gradio
-    direction TB
-    K1[Load ViT export]
-    K2[Load ResNet .keras]
-    K3[User uploads image]
-    K4[Predict -> softmax]
-    K5[Apply remap -> APTOS order]
-    K6[Show top-5]
-  end
+    class I1,I2,I3 evalStyle
+    class K1,K2,K3,K4 deployStyle
 
-  F --> G1
-  F --> H1
-  G8 --> I1
-  H4 --> I3
-  I3 --> J1
-  I3 --> J2
-  J3 --> K5
-  K1 --> K4
-  K2 --> K4
-  K3 --> K4 --> K5 --> K6
+    %% --- Connections ---
+    F --> G1 & H1
+    G5 --> I1
+    H4 --> I3
+    I2 --> K1
 ```
 
 This project provides a web-based Gradio app to classify **Diabetic Retinopathy** severity using:
