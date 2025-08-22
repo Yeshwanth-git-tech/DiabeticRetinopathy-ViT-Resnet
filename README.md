@@ -7,7 +7,7 @@ The diagram below shows the full pipeline:
 ```mermaid
  flowchart TB
      %% --- Style Definitions ---
-     classDef bronzeStyle fill:#cd7f32,stroke:#8B4513,stroke-width:2px,color:#ffffff
+     classDef bronzeStyle fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#ecf0f1
      classDef silverStyle fill:#bdc3c7,stroke:#7f8c8d,stroke-width:2px,color:#000000
      classDef goldStyle fill:#f1c40f,stroke:#b8860b,stroke-width:2px,color:#000000
  
@@ -43,13 +43,16 @@ The diagram below shows the full pipeline:
      class G1,G2,G3,G4,G5,H1,H2,H3,H4 silverStyle
  
      %% --- GOLD TIER: Final Product ---
-     subgraph Gold Tier - Final Product
-         direction TB
-         I1["🧪 Evaluate on Test Set<br/>(Accuracy, QWK, F1-Score)"] --> I2["📊 Generate Confusion Matrix"]
-         I2 --> J1["🚀 Deploy to Hugging Face Space"]
-         J1 --> J2["Interactive Gradio App<br/>(User Upload & Prediction)"]
+     subgraph Gold Tier - Final Prediction Flow
+         direction LR
+         I1["📤 Upload Retinal Scan"] --> I2["🤖 Model Prediction<br/>(Accuracy: 86%+, QWK: 0.86+)"]
+         I2 --> I3["🩺 Predicts: No_DR"]
+         I2 --> I4["🩺 Predicts: Mild"]
+         I2 --> I5["🩺 Predicts: Moderate"]
+         I2 --> I6["🩺 Predicts: Severe"]
+         I2 --> I7["🩺 Predicts: Proliferate_DR"]
      end
-     class I1,I2,J1,J2 goldStyle
+     class I1,I2,I3,I4,I5,I6,I7 goldStyle
  
      %% --- Connections ---
      D --> G1
