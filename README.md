@@ -12,10 +12,10 @@ flowchart TB
   D --> E[Stratified split 80/20]
   E --> F[Class weights]
 
-  subgraph G[VIT training (PyTorch)]
+  subgraph VIT_Training
     direction TB
-    G1[AutoImageProcessor] --> G2[Dataset with augs]
-    G2 --> G3[Phase 1: head only\nLR 5e-4, WD 0.05, 5-10 ep]
+    G1[AutoImageProcessor] --> G2[Dataset with augmentations]
+    G2 --> G3[Phase 1: head only\nLR 5e-4, WD 0.05, 5-10 epochs]
     G3 --> G4[Pick best by QWK]
     G4 --> G5[Phase 2a: unfreeze 6-11\nLR 2e-5, WD 0.10, cosine, warmup 0.10]
     G5 --> G6[Top-off cool: LR 1e-5]
@@ -23,36 +23,36 @@ flowchart TB
     G7 --> G8[Export: dr-vit-EXPORT-final]
   end
 
-  subgraph H[ResNet50 training (TensorFlow)]
+  subgraph ResNet_Training
     direction TB
-    H1[tf.data] --> H2[ResNet50 + dense(5)]
+    H1[tf.data pipeline] --> H2[ResNet50 + Dense(5)]
     H2 --> H3[Fine-tune base]
     H3 --> H4[Save: retinopathy_baseline_model.keras]
-    H4 --> H5[Train order: Mild, Moderate, No_DR, Proliferate_DR, Severe]
+    H4 --> H5[Train order:\nMild, Moderate, No_DR, Proliferate_DR, Severe]
   end
 
-  subgraph I[Evaluation]
+  subgraph Evaluation
     direction TB
-    I1[VALID metrics: Acc, F1 macro, QWK, AUC macro]
+    I1[VALID metrics:\nAccuracy, F1 macro, QWK, AUC macro]
     I2[Select best QWK checkpoint]
     I3[TEST inference]
-    I4[Confusion matrix, per-class F1, examples]
+    I4[Confusion matrix,\nper-class F1, examples]
   end
 
-  subgraph J[Label orders]
+  subgraph Label_Orders
     direction TB
     J1[APTOS order:\nNo_DR, Mild, Moderate, Severe, Proliferative_DR]
     J2[Model order:\nMild, Moderate, No_DR, Proliferate_DR, Severe]
-    J3[Index remap:\n0→1, 1→2, 2→0, 3→4, 4→3]
+    J3[Index remap:\n0->1, 1->2, 2->0, 3->4, 4->3]
   end
 
-  subgraph K[HF Space (Gradio)]
+  subgraph HF_Space_Gradio
     direction TB
     K1[Load ViT export]
     K2[Load ResNet .keras]
     K3[User uploads image]
-    K4[Predict → softmax]
-    K5[Apply remap → APTOS order]
+    K4[Predict -> softmax]
+    K5[Apply remap -> APTOS order]
     K6[Show top-5]
   end
 
