@@ -25,7 +25,7 @@ The diagram below shows the full pipeline:
      subgraph Silver Tier - Model Training
          direction LR
  
-         subgraph ViT Training (PyTorch)
+         subgraph "ViT Training (PyTorch)"
              direction TB
              G1["ViT AutoImageProcessor"] --> G2["Custom PyTorch Dataset<br/>(Albumentations Augmentation)"]
              G2 --> G3["<b>Phase 1:</b> Head Training<br/><i>(5 Epochs, LR: 5e-4)</i>"]
@@ -33,7 +33,7 @@ The diagram below shows the full pipeline:
              G4 --> G5["📦 Export ViT Model"]
          end
  
-         subgraph ResNet-50 Training (TensorFlow)
+         subgraph "ResNet-50 Training (TensorFlow)"
              direction TB
              H1["tf.data Pipeline"] --> H2["<b>Model:</b> ResNet50 Base + Dense(5)<br/><i>(23.5M Params)</i>"]
              H2 --> H3["<b>Initial Training:</b> Train Head<br/><i>(25 Epochs, LR: 1e-3)</i>"]
