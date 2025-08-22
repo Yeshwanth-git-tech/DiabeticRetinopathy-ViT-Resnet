@@ -57,8 +57,7 @@ The diagram below shows the full pipeline:
      E --> H1
      G5 --> I1
      H5 --> I1
- ```
- `\`\`\``
+```
 
 This project provides a web-based Gradio app to classify **Diabetic Retinopathy** severity using:
 - **Vision Transformer (ViT, PyTorch)**  
