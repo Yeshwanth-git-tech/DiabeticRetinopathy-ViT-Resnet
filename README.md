@@ -7,15 +7,14 @@ The diagram below shows the full pipeline:
 ```mermaid
  flowchart TB
      %% --- Style Definitions ---
-     classDef bronzeStyle fill:#cd7f32,stroke:#8B4S13,stroke-width:2px,color:#ffffff
+     classDef bronzeStyle fill:#cd7f32,stroke:#8B4513,stroke-width:2px,color:#ffffff
      classDef silverStyle fill:#bdc3c7,stroke:#7f8c8d,stroke-width:2px,color:#000000
      classDef goldStyle fill:#f1c40f,stroke:#b8860b,stroke-width:2px,color:#000000
  
      %% --- BRONZE TIER: Data Pipeline ---
      subgraph Bronze Tier - Data Foundation
          direction TB
-         A["📄 Load Data,  Audit & Clean Images"]
-         A --> B["✨ Advanced Preprocessing<br/>(Fundus Crop + CLAHE)"]
+         A["📄 Load Data, Audit & Clean Images"] --> B["✨ Advanced Preprocessing<br/>(Fundus Crop + CLAHE)"]
          B --> C["⚖️ Class Weight Penalty<br/>to Maintain Class Balance"]
      end
      class A,B,C bronzeStyle
@@ -55,8 +54,8 @@ The diagram below shows the full pipeline:
      class I1,I2,I3,I4,I5,I6,I7 goldStyle
  
      %% --- Connections ---
-     D --> G1
-     D --> H1
+     C --> G1
+     C --> H1
      G5 --> I1
      H5 --> I1
 ```
