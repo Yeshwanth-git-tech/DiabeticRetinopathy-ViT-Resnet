@@ -5,14 +5,15 @@ This project trains and deploys deep learning models (ViT & ResNet-50) for APTOS
 The diagram below shows the full pipeline:
 
 ```mermaid
- flowchart TB
+flowchart TB
      %% --- Style Definitions ---
      classDef bronzeStyle fill:#cd7f32,stroke:#8B4513,stroke-width:2px,color:#ffffff
      classDef silverStyle fill:#bdc3c7,stroke:#7f8c8d,stroke-width:2px,color:#000000
      classDef goldStyle fill:#f1c40f,stroke:#b8860b,stroke-width:2px,color:#000000
- 
+     classDef titleStyle fill:none,stroke:none,color:#000000,font-weight:bold,font-size:18px
+
      %% --- BRONZE TIER ---
-     subgraph Bronze Tier 
+     subgraph Bronze Tier
          direction TB
          A["📄 Load Data, Audit & Clean Images"] --> B["✨ Advanced Preprocessing<br/>(Fundus Crop + CLAHE)"]
          B --> C["⚖️ Class Weight Penalty<br/>to Maintain Class Balance"]
@@ -20,7 +21,7 @@ The diagram below shows the full pipeline:
      class A,B,C bronzeStyle
  
      %% --- SILVER TIER ---
-     subgraph Silver Tier 
+     subgraph Silver Tier
          direction LR
  
          subgraph "ViT Training (PyTorch)"
@@ -42,8 +43,10 @@ The diagram below shows the full pipeline:
      class G1,G2,G3,G4,G5,H1,H2,H3,H4 silverStyle
  
      %% --- GOLD TIER ---
-     subgraph Gold Tier 
+     subgraph
          direction LR
+         GoldTitle["<b>Gold Tier</b>"]
+         
          I1["📤 Upload Retinal Scan"] --> I2["🤖 Model Prediction<br/>(Accuracy: 86%+, QWK: 0.86+)"]
          I2 --> I3["🩺 Predicts: No_DR"]
          I2 --> I4["🩺 Predicts: Mild"]
@@ -51,6 +54,7 @@ The diagram below shows the full pipeline:
          I2 --> I6["🩺 Predicts: Severe"]
          I2 --> I7["🩺 Predicts: Proliferate_DR"]
      end
+     class GoldTitle titleStyle
      class I1,I2,I3,I4,I5,I6,I7 goldStyle
  
      %% --- Connections ---
