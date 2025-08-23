@@ -1,4 +1,4 @@
-# 🩺 Diabetic Retinopathy Classifier (ViT + ResNet)
+# 🩺 Diabetic Retinopathy Classifier (ViT & ResNet)
 
 
 This project trains and deploys deep learning models (ViT & ResNet-50) for APTOS Diabetic Retinopathy classification.  
