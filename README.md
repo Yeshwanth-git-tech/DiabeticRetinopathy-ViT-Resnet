@@ -42,7 +42,7 @@ The diagram below shows the full pipeline:
      class G1,G2,G3,G4,G5,H1,H2,H3,H4 silverStyle
  
      %% --- GOLD TIER ---
-     subgraphGold Tier 
+     subgraph Gold Tier 
          direction LR
          I1["📤 Upload Retinal Scan"] --> I2["🤖 Model Prediction<br/>(Accuracy: 86%+, QWK: 0.86+)"]
          I2 --> I3["🩺 Predicts: No_DR"]
