@@ -49,7 +49,7 @@ The diagram below shows the full pipeline:
  
      %% --- GOLD TIER ---
      subgraph
-         direction LR
+         direction TB
          GoldTitle["<b>Gold Tier</b>"]
          
          I1["📤 Upload Retinal Scan"] --> I2["🤖 Model Prediction<br/>(Accuracy: 86%+, QWK: 0.86+)"]
