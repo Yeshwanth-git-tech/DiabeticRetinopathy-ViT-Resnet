@@ -11,16 +11,16 @@ The diagram below shows the full pipeline:
      classDef silverStyle fill:#bdc3c7,stroke:#7f8c8d,stroke-width:2px,color:#000000
      classDef goldStyle fill:#f1c40f,stroke:#b8860b,stroke-width:2px,color:#000000
  
-     %% --- BRONZE TIER: Data Pipeline ---
-     subgraph "<b>Bronze Tier - Data Foundation</b>"
+     %% --- BRONZE TIER ---
+     subgraph Bronze Tier 
          direction TB
          A["📄 Load Data, Audit & Clean Images"] --> B["✨ Advanced Preprocessing<br/>(Fundus Crop + CLAHE)"]
          B --> C["⚖️ Class Weight Penalty<br/>to Maintain Class Balance"]
      end
      class A,B,C bronzeStyle
  
-     %% --- SILVER TIER: Model Training ---
-     subgraph "<b>Silver Tier - Model Training</b>"
+     %% --- SILVER TIER ---
+     subgraph Silver Tier 
          direction LR
  
          subgraph "ViT Training (PyTorch)"
@@ -41,8 +41,8 @@ The diagram below shows the full pipeline:
      end
      class G1,G2,G3,G4,G5,H1,H2,H3,H4 silverStyle
  
-     %% --- GOLD TIER: Final Product ---
-     subgraph "<b>Gold Tier - Final Prediction Flow</b>"
+     %% --- GOLD TIER ---
+     subgraph Gold Tier 
          direction LR
          I1["📤 Upload Retinal Scan"] --> I2["🤖 Model Prediction<br/>(Accuracy: 86%+, QWK: 0.86+)"]
          I2 --> I3["🩺 Predicts: No_DR"]
@@ -59,6 +59,7 @@ The diagram below shows the full pipeline:
      G5 --> I1
      H5 --> I1
 ```
+
 
 This project provides a web-based Gradio app to classify **Diabetic Retinopathy** severity using:
 - **Vision Transformer (ViT, PyTorch)**  
